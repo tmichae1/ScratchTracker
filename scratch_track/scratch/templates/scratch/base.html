@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'scratch/main.css' %}">
+    <script src="{% static 'js/moment.js' %}"></script>
+    <script src = "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <title>Scratch Track!</title>
+
+</head>
+<body>
+<header class="site-header">
+    <nav class="navbar navbar-expand-md navbar-light bg-steel fixed-top">
+        <div class="container">
+            <a style="font-size: 25px;" href="{% url 'scratch-home' %}" class="navbar-brand mr-4">Scratch Track</a>
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarToggle"
+                    aria-controls="collapse_target"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+                <ul class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a
+                                href="#"
+                                class="nav-link dropdown-toggle"
+                                data-toggle="dropdown"
+                                data-target="reportsDropToggle"
+                        >Medical Reports<span class="caret"></span
+                        ></a>
+                        <div
+                                class="dropdown-menu bg-steel"
+                                aria-labelledby="reportsDropToggle"
+                        >
+                            <a
+                                    href="{% url 'add-daily-report' %}"
+                                    class="dropdown-item dropdown-link"
+                            >Add New Report</a
+                            >
+                            <a
+                                    href="{% url 'get-todays-report' %}"
+                                    class="dropdown-item dropdown-link"
+                            >View Todays Report</a
+                            >
+                            <a
+                                    href="{% url 'view-all-reports' %}"
+                                    class="dropdown-item dropdown-link"
+                            >View All Reports</a
+                            >
+                        </div>
+                    </li>
+                    <li>
+                        <a href="{% url 'night-scratch' %}" class="nav-link">Night Scratches</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a
+                                href="#"
+                                class="nav-link dropdown-toggle"
+                                data-toggle="dropdown"
+                                data-target="statsDropToggle"
+                        >Stats<span class="caret"></span
+                        ></a>
+                        <div
+                                class="dropdown-menu bg-steel"
+                                aria-labelledby="statsDropToggle"
+                        >
+                            <a
+                                    href="{% url 'stats-table' %}"
+                                    class="dropdown-item dropdown-link"
+                            >Tables</a
+                            >
+                            <a
+                                    href="{% url 'stats-chart' %}"
+                                    class="dropdown-item dropdown-link"
+                            >Chart</a
+                            >
+                        </div>
+                    </li>
+                {% endif %}
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}?next={% url 'scratch-home' %}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="nav-link">Register</a>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main role="main" class="container">
+    <div class="col-md-12">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+    {% block content %}
+    {% endblock %}
+    </div>
+</main>
+<!-- Optional JavaScript-->
+<!-- jQuery first, then Popper.js, then Bootstrap JS-->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

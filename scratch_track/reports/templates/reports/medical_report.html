@@ -1,0 +1,97 @@
+{% extends "scratch/base.html" %}
+{% load crispy_forms_tags %}
+{% block content%}
+<div class="content-section">
+    <h4 style="text-align: center">Daily Report: {{date}} </h4>
+    <br>
+    <br>
+    <div style="text-align: center">
+        <h5>Your Total Scratches</h5>
+        {% if not total_scratches %}
+        <p>You have not scratched at all today</p>
+        {% elif total_scratches.total == 1 %}
+        <p>You scratched a total of <strong>{{total_scratches.total}}</strong> time today!</p>
+        {% else %}
+        <p>You scratched a total of <strong>{{total_scratches.total}}</strong> times today!</p>
+        {% endif %}
+        <br>
+        <br>
+        {% if report %}
+            {% if report.ointment_used %}
+            <h5>Your ointment application</h5>
+            <p>You used {{report.ointment_used}} today</p>
+            <br>
+            <br>
+            {% endif %}
+
+            {% if report.nasal_spray_used %}
+            <h5>Your Nasal Spray Use</h5>
+                {% if report.nostril_used == "both"%}
+                <p>You took your {{report.nasal_spray_used}} in <strong>both nostrils</strong> today</p>
+                {% else %}
+                <p>You took your {{report.nasal_spray_used}} in your <strong>{{report.nostril_used}} nostril</strong> today</p>
+                {% endif %}
+            <br>
+            <br>
+            {% endif %}
+            {% if report.scalp_steroid == True %}
+            <h5>Your scalp steroid Use</h5>
+            <p>You took your scalp steroid today</p>
+            <br>
+            <br>
+            {% endif %}
+            {% if report.antihistamine_120mg != 0 or report.steroid_tablet != 0 or report.inhaler != 0%}
+                <h5>Tablets And Steroids </h5>
+                {%if report.antihistamine_120mg > 0%}
+                    {%if report.antihistamine_120mg == 1%}
+                        <p>You took your Antihistamine 120mg <strong>{{report.antihistamine_120mg}}</strong> time today</p>
+                    {% else %}
+                        <p>You took your Antihistamine 120mg <strong>{{report.antihistamine_120mg}}</strong> times today</p>
+                    {% endif %}
+                {% endif %}
+                {%if report.steroid_tablet > 0%}
+                    {%if report.steroid_tablet == 1%}
+                        <p>You took your steroid tablet <strong>{{report.steroid_tablet}}</strong> time today</p>
+                    {% else %}
+                        <p>You took your steroid tablets <strong>{{report.steroid_tablet}}</strong> times today</p>
+                    {% endif %}
+                {% endif %}
+                {%if report.inhaler > 0%}
+                    {%if report.inhaler == 1%}
+                        <p>You took your inhaler <strong>{{report.inhaler}}</strong> time today</p>
+                    {% else %}
+                        <p>You took your inhaler <strong>{{report.inhaler}}</strong> times today</p>
+                    {% endif %}
+                {% endif %}
+            <br>
+            <br>
+            {% endif %}
+            {% if report.extra_info %}
+                <h5>Extra info for today</h5>
+                <p>{{report.extra_info}}</p>
+                <br>
+                <br>
+            {% endif %}
+        {% endif %}
+        {% if night_points %}
+            <h5>Scratch Points for the night</h5>
+            {% if night_points == 1 %}
+                <p>You got to 10 scratches on the night of {{night_points.date}} <strong>{{night_points.time_of_10th_scratch}} giving you a total of {{night_points.points}} point </strong></p>
+            {% else %}
+                <p>You got to 10 scratches on the night of {{night_points.date}} <strong>{{night_points.time_of_10th_scratch}} giving you a total of {{night_points.points}} points </strong></p>
+            {% endif %}
+        {% endif %}
+
+        {% if total_scratches %}
+            <a style="margin-bottom: 5px" class="btn btn-page" href="{% url 'add-missed-scratch' total_scratches.date %}">Add Missed Scratches</a>
+        {% endif %}
+        {% if report %}
+            <a style="margin-bottom: 5px" class="btn btn-page" href="{% url 'update-report' report.date%}">Edit Medical Report</a>
+        {% endif %}
+        {% if night_points %}
+            <a style="margin-bottom: 5px" class="btn btn-page" href="{% url 'update-night-scratch' night_points.date %}">Edit Scratch Points</a>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock content %}

@@ -1,0 +1,182 @@
+{% extends "scratch/base.html" %} {% block content %}
+<div class="btn-div">
+  <a
+    href="{% url 'add-scratch' %}"
+    class="btn btn-color btn-circle btn-xl"
+    onclick="return confirm('Did you scratch?');"
+    >Scratch!</a
+  >
+</div>
+<div class="stats-container" id="infoContainer">
+  <div class="stats hidden content-section">
+    <h5><u>Scratches Stats</u></h5>
+    <p style="margin: 0; font-size: 15px" id="todaysTotal"></p>
+    <p style="margin: 0; font-size: 15px" id="weeklyAvgTime"></p>
+    <p style="margin: 0; font-size: 15px" id="currentMonthSAvg"></p>
+    <p style="margin: 0; font-size: 15px" id="lastMonthSAvg"></p>
+    <hr />
+    <h5><u>NightPoint Stats</u></h5>
+    <p style="margin: 0; font-size: 15px" id="currentMonthNPAvg"></p>
+    <p style="margin: 0; font-size: 15px" id="lastMonthNPAvg"></p>
+    <hr />
+    <h5><u>Medical Points</u></h5>
+    <p style="margin: 0; font-size: 15px" id="currentMonthMPAvg"></p>
+    <p style="margin: 0; font-size: 15px" id="lastMonthMPAvg"></p>
+  </div>
+  <button class="btn btn-stats-color" id="statBtn">Get stats</button>
+</div>
+<div class="stats-container">
+  <div class="hidden content-section" id="medicalHistoryContainer"></div>
+  <button
+    style="margin-bottom: 10px"
+    class="btn btn-stats-color"
+    id="medicalBtn"
+  >
+    Get medical intake history
+  </button>
+</div>
+{% for item in medical_history %} {{item}} {% endfor %}
+
+<script type="text/javascript">
+  showThenHide();
+  medicalHsitoryDaysApiCall();
+  let statBtn = document.getElementById("statBtn");
+  statBtn.addEventListener("click", function () {
+    showThenHide();
+  });
+  let medicalBtn = document.getElementById("medicalBtn");
+  medicalBtn.addEventListener("click", function () {
+    let medicalHistory = document.getElementById("medicalHistoryContainer");
+    medicalHistory.classList.remove("hidden");
+    medicalBtn.classList.add("hidden");
+    setTimeout(function () {
+      medicalHistory.classList.add("hidden");
+      medicalBtn.classList.remove("hidden");
+    }, 20000);
+  });
+
+  function showStats() {
+    var myToken = "{{token}}";
+    var url = "http://127.0.0.1:8000/api/get-stats";
+    fetch(url)
+      .then((res) => res.json())
+      .then(function (data) {
+        let stats = data;
+
+        // Scratch stats
+        let dailyTotal = stats.daily_total;
+        let weeklyAvgTime = stats.weekly_avg_time;
+        let currentMonthSAvg = stats.scratch_avg_current_month;
+        let lastMonthSAvg = stats.scratch_avg_last_month;
+        now = new moment();
+        document.getElementById("todaysTotal").innerHTML =
+          "Total scratches today: <strong>" + dailyTotal + "</strong>";
+        document.getElementById("weeklyAvgTime").innerHTML =
+          "Average scratches before " +
+          now.format("h:mma") +
+          ": <strong>" +
+          weeklyAvgTime +
+          "</strong>";
+        document.getElementById("currentMonthSAvg").innerHTML =
+          "Average scratches for this month: <strong> " +
+          currentMonthSAvg +
+          "</strong>";
+        document.getElementById("lastMonthSAvg").innerHTML =
+          "Average scratches for last month: <strong> " +
+          lastMonthSAvg +
+          "</strong>";
+
+        // NightPoint stats
+        let currentMonthAvg = stats.night_points_current_month;
+        let lastMonthAvg = stats.night_points_last_month;
+        if (currentMonthAvg > -1) {
+          document.getElementById("currentMonthNPAvg").innerHTML =
+            "Average NightPoints for this month: <strong>" +
+            currentMonthAvg +
+            "</strong>";
+        } else {
+          document.getElementById("currentMonthNPAvg").innerHTML =
+            "Average NightPoints for this month: <strong>N/A</strong>";
+        }
+        if (lastMonthAvg > -1) {
+          document.getElementById("lastMonthNPAvg").innerHTML =
+            "Average NightPoints for last month: <strong>" +
+            lastMonthAvg +
+            "</strong>";
+        } else {
+          document.getElementById("lastMonthNPAvg").innerHTML =
+            "Average NightPoints for last month: <strong>N/A</strong>";
+        }
+
+        // medical Scores
+        let currentMonthMPAvg = stats.medical_score_current_month;
+        let lastMonthMPAvg = stats.medical_score_last_month;
+        if (currentMonthMPAvg > -1) {
+          document.getElementById("currentMonthMPAvg").innerHTML =
+            "Average MedicalScore for current month: <strong>" +
+            currentMonthMPAvg +
+            "</strong>";
+        } else {
+          document.getElementById("currentMonthMPAvg").innerHTML =
+            "Average MedicalScore for current month: <strong>N/A</strong>";
+        }
+        if (lastMonthMPAvg > -1) {
+          document.getElementById("lastMonthMPAvg").innerHTML =
+            "Average MedicalScore for last month: <strong>" +
+            lastMonthMPAvg +
+            "</strong>";
+        } else {
+          document.getElementById("lastMonthMPAvg").innerHTML =
+            "Average MedicalScore for last month: <strong>N/A</strong>";
+        }
+        let infoList = document.getElementsByClassName("stats");
+        for (let i = 0; i < infoList.length; i++) {
+          infoList[i].classList.remove("hidden");
+        }
+        document.getElementById("statBtn").classList.add("hidden");
+      });
+  }
+  function medicalHsitoryDaysApiCall() {
+    var url = "http://127.0.0.1:8000/api/get-medical-intake-history";
+    fetch(url)
+      .then((res) => res.json())
+      .then(function (data) {
+        let container = document.getElementById("medicalHistoryContainer");
+        container.innerHTML = "<h5>Intake history</h5>";
+        var list = data;
+        for (var i in list) {
+          if (list[i].days != 1) {
+            var item = `
+          <p style='font-size: 15px'>${list[i].name} - last took <strong>${list[i].days}</strong> days ago</p>
+
+          `;
+          } else {
+            var item = `
+          <p style='font-size: 15px'>${list[i].name} - last took <strong>${list[i].days}</strong> day ago</p>
+
+          `;
+          }
+          if (i < list.length - 1) {
+            item += `<hr>`;
+          }
+          container.innerHTML += item;
+        }
+      });
+  }
+
+  function hideStats() {
+    let infoList = document.getElementsByClassName("stats");
+    for (let i = 0; i < infoList.length; i++) {
+      infoList[i].classList.add("hidden");
+    }
+    document.getElementById("statBtn").classList.remove("hidden");
+  }
+
+  function showThenHide() {
+    showStats();
+    setTimeout(function () {
+      hideStats();
+    }, 20000);
+  }
+</script>
+{% endblock content %}

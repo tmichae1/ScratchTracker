@@ -1,0 +1,70 @@
+{% extends "scratch/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                Daily Report
+            </legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">
+                Submit
+            </button>
+        </div>
+    </form>
+    <br>
+
+<!--    Medical scores table-->
+    <table class="table table-striped table-bordered table-sm">
+        <thead>
+        <tr>
+            <th>Medication</th>
+            <th>Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Elocon</td>
+            <td>10 points (spread across 5 days)</td>
+        </tr>
+        <tr>
+            <td>Synalar</td>
+            <td>8 points (spread across 5 days)</td>
+        </tr>
+        <tr>
+            <td>Elidel</td>
+            <td>1 point</td>
+        </tr>
+        <tr>
+            <td>Locoid</td>
+            <td>5 points (spread across 5 days)</td>
+        </tr>
+        <tr>
+            <td>Scalp Steroid</td>
+            <td>4 points (spread across 5 days)</td>
+        </tr>
+        <tr>
+            <td>Nasal Spray</td>
+            <td>0.5 points per nostril</td>
+        </tr>
+        <tr>
+            <td>Antihistamine 120mg</td>
+            <td>1 point per tablet</td>
+        </tr>
+        <tr>
+            <td>Steroid Tablet</td>
+            <td>1 point per tablet</td>
+        </tr>
+        <tr>
+            <td>Inhaler</td>
+            <td>1 point</td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

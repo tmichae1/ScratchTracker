@@ -1,0 +1,9 @@
+{% extends "scratch/base.html" %}
+{% block content %}
+<h2 style="text-align: center">You have already made your daily report.</h2>
+<div class = "border-top pt-3">
+    <small class = "text-muted">
+        <a href="{% url 'get-todays-report' %}">View it here</a>
+    </small>
+</div>
+{% endblock content %}

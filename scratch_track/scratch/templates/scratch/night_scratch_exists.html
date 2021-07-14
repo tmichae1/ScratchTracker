@@ -1,0 +1,9 @@
+{% extends "scratch/base.html" %}
+{% block content %}
+<h2 style="text-align: center">You have already input your night scratches.</h2>
+<div class = "border-top pt-3">
+    <small class = "text-muted">
+        <a href="{% url 'view-all-reports' %}">View your reports</a>
+    </small>
+</div>
+{% endblock content %}

@@ -1,0 +1,229 @@
+{% extends "scratch/base.html" %}
+{% load crispy_forms_tags %}
+{% block content%}
+
+<label for="monthSelector">Date:</label>
+<input
+  type="month"
+  id="monthSelector"
+  name="start"
+  min="{{min_date}}"
+  max="{{today_date}}"
+  value="{{today_date}}"
+/>
+<div
+  class="chart_div"
+  id="chartDiv"
+  style="max-height: 800px; max-width: 1000px; margin: 5px"
+>
+  <canvas id="myChart" width="800" height="1200"> </canvas>
+</div>
+
+<script>
+  // Chart initialisation
+  let chartTest = new Chart(myChart, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "Scratch Total",
+          fill: false,
+          data: [],
+          borderColor: "#3e95cd",
+          borderWidth: 2,
+          lineTension: 0,
+          pointBackgroundColor: "#1169C1",
+          pointBorderColor: "#1169C1",
+          pointHoverBackgroundColor: "#4EA5FB",
+          pointHoverBorderColor: "#4EA5FB",
+        },
+        {
+          data: [],
+          label: "Medical Score",
+          fill: false,
+          borderWidth: 2,
+          lineTension: 0,
+          borderColor: "#3cba9f",
+          pointBackgroundColor: "#249B84",
+          pointBorderColor: "#249B84",
+          pointHoverBackgroundColor: "#03D5AB",
+          pointHoverBorderColor: "#03D5AB",
+        },
+        {
+          data: [],
+          label: "Night Scratch Score",
+          fill: false,
+          borderWidth: 2,
+          lineTension: 0,
+          borderColor: "#c45850",
+          pointBackgroundColor: "#BA0D00",
+          pointBorderColor: "#BA0D00",
+          pointHoverBackgroundColor: "#FF655A",
+          pointHoverBorderColor: "#FF655A",
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Daily Scratches / Medical Scores",
+      },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+        xAxis: [
+          {
+            ticks: {
+              stepSize: 1,
+              autoSkip: false,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  var monthSelector = document.getElementById("monthSelector");
+  //  event listener for month slider
+  monthSelector.addEventListener("input", function () {
+    selected_date = monthSelector.value + "-01";
+    drawChart(selected_date);
+  });
+  var today = monthSelector.value + "-01";
+
+  //  Draw chart upon loading page
+  drawChart(today);
+
+  function drawChart(date) {
+    var chartDiv = document.getElementById("chartDiv");
+    var canvas = document.getElementById("myChart");
+    const context = canvas.getContext("2d");
+    x_labels = [];
+    data_set_scratches = [];
+    data_set_medical_scores = [];
+    data_set_night_scores = [];
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    var url_scratches =
+      "http://127.0.0.1:8000/api/get-daily-scratch-count/" + date + "/";
+    var url_medical_scores =
+      "http://127.0.0.1:8000/api/get-daily-medical-score/" + date + "/";
+    var url_night_scratch =
+      "http://127.0.0.1:8000/api/get-night-scratch-score/" + date + "/";
+
+    // get x label based on dates of selected month
+    var date_vals = date.split("-");
+    var num_days = getDaysInMonth(date_vals[1], date_vals[0]);
+    console.log(num_days);
+    for (var i = 1; i <= num_days; i++) {
+      var num = minTwoDigits(i);
+      fullDate = num + "-" + date_vals[1] + "-" + date_vals[0];
+      x_labels.push(fullDate);
+    }
+
+    //  call api to fetch the data
+    Promise.all([
+      fetch(url_scratches)
+        .then((res) => res.json())
+        .then(function (data) {
+          var scratches = data;
+          var dateIndex = 0;
+          var scratchesIndex = 0;
+          while (scratchesIndex < scratches.length) {
+            var scratchDates = scratches[scratchesIndex].date.split("-"); //  Splits date into list ["YYYY", "MM", "DD"]
+            var scratchDateString =
+              scratchDates[2] + "-" + scratchDates[1] + "-" + scratchDates[0];
+            //  if dates are equal, push total and increase both index
+            if (scratchDateString == x_labels[dateIndex]) {
+              data_set_scratches.push(scratches[scratchesIndex].total);
+              dateIndex += 1;
+              scratchesIndex += 1;
+              //  if dates are not equal, push 0 and increase only date index
+            } else {
+              data_set_scratches.push(0);
+              dateIndex += 1;
+            }
+          }
+          console.log(data_set_scratches);
+        }),
+      fetch(url_medical_scores)
+        .then((res) => res.json())
+        .then(function (data) {
+          var medicalScores = data;
+          var dateIndex = 0;
+          var scoreIndex = 0;
+          while (scoreIndex < medicalScores.length) {
+            var scoreDates = medicalScores[scoreIndex].date.split("-"); //  Splits date into list ["YYYY", "MM", "DD"]
+            var scoreDateString =
+              scoreDates[2] + "-" + scoreDates[1] + "-" + scoreDates[0];
+            // if dates are equal, push score then increase both index
+            if (scoreDateString == x_labels[dateIndex]) {
+              data_set_medical_scores.push(medicalScores[scoreIndex].score);
+              dateIndex += 1;
+              scoreIndex += 1;
+              //  if dates are not equal, push 0 and increase only date index
+            } else {
+              data_set_medical_scores.push(0);
+              dateIndex += 1;
+            }
+          }
+          console.log(data_set_medical_scores);
+        }),
+      fetch(url_night_scratch)
+        .then((res) => res.json())
+        .then(function (data) {
+          var nightScores = data;
+          var dateIndex = 0;
+          var scoreIndex = 0;
+          while (scoreIndex < nightScores.length) {
+            var scoreDates = nightScores[scoreIndex].date.split("-"); //  Splits date into list ["YYYY", "MM", "DD"]
+            var scoreDateString =
+              scoreDates[2] + "-" + scoreDates[1] + "-" + scoreDates[0];
+            // if dates are equal, push score then increase both index
+            if (scoreDateString == x_labels[dateIndex]) {
+              data_set_night_scores.push(nightScores[scoreIndex].points);
+              dateIndex += 1;
+              scoreIndex += 1;
+              //  if dates are not equal, push 0 and increase only date index
+            } else {
+              data_set_night_scores.push(0);
+              dateIndex += 1;
+            }
+          }
+          console.log(data_set_night_scores);
+        }),
+    ]).then(function () {
+      //  Create chart from api Data
+      updateChart(
+        x_labels,
+        data_set_scratches,
+        data_set_medical_scores,
+        data_set_night_scores
+      );
+    });
+  }
+
+  // function to get num of days in month
+  function getDaysInMonth(month, year) {
+    return new Date(year, month, 0).getDate();
+  }
+
+  function minTwoDigits(n) {
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  function updateChart(dates, scratch, medical, night) {
+    chartTest.data.datasets[0].data = scratch;
+    chartTest.data.datasets[1].data = medical;
+    chartTest.data.datasets[2].data = night;
+    chartTest.data.labels = dates;
+    chartTest.update()
+  }
+</script>
+
+{% endblock content %}

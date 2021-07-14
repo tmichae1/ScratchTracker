@@ -1,0 +1,192 @@
+{% extends "scratch/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!--<div>-->
+<!--    <h2 style="text-align: center">Previous Medical Scores</h2>-->
+<!--    <br>-->
+<!--    <div class="table-responsive">-->
+<!--    <table id = "tBasicExample" class="table table-striped table-bordered table-sm">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Date</th>-->
+<!--            <th>Average Score</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        {% for score in scores %}-->
+<!--        <tr>-->
+<!--            <td>{{score.date}}</td>-->
+<!--            <td>{{score.score}}</td>-->
+<!--        </tr>-->
+<!--        {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<div class="content-section">
+    <h4 style="text-align: center">Previous Medical Scores</h4>
+    <hr>
+    <ul style="list-style: none; padding: 0">
+        <li class="dropdown">
+            <h5><a href="#monthlyAverages" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                Monthly Averages</a></h5>
+            <div class="collapse ml-2 table-responsive" id="monthlyAverages">
+                <table class="table table-striped table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Average Score</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for score in monthly_scores %}
+                    <tr>
+                        <td>{{score.date}}</td>
+                        <td>{{score.score}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </li>
+    </ul>
+    <br>
+    <ul style="list-style: none; padding: 0">
+        <li class="dropdown">
+            <h5><a href="#dailyScores" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                Daily Scores</a></h5>
+            <div class="collapse ml-2 table-responsive" id="dailyScores">
+                <table class="table table-striped table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Score</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for score in daily_scores %}
+                    <tr>
+                        <td>{{score.date}}</td>
+                        <td>{{score.score}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="content-section">
+    <h4 style="text-align: center">Previous Night Scores</h4>
+    <hr>
+    <ul style="list-style: none; padding: 0">
+        <li class="dropdown">
+            <h5><a href="#NightMonthlyAverages" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                Monthly Averages</a></h5>
+            <div class="collapse ml-2 table-responsive" id="NightMonthlyAverages">
+                <table class="table table-striped table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Average Score</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for score in night_avg %}
+                    <tr>
+                        <td>{{score.date}}</td>
+                        <td>{{score.points}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </li>
+    </ul>
+    <br>
+    <ul style="list-style: none; padding: 0">
+        <li class="dropdown">
+            <h5><a href="#NightDailyScores" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                Daily Scores</a></h5>
+            <div class="collapse ml-2 table-responsive" id="NightDailyScores">
+                <table class="table table-striped table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time of 10th Scratch</th>
+                        <th>Score</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for score in night_daily_scores %}
+                    <tr>
+                        <td>{{score.date}}</td>
+                        <td>{{score.time_of_10th_scratch}}</td>
+                        <td>{{score.points}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>
+    <div class="content-section">
+        <h4 style="text-align: center">Previous Scratches</h4>
+        <hr>
+        <ul style="list-style: none; padding: 0">
+            <li class="dropdown">
+                <h5><a href="#ScratchMonthlyAverages" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                    Monthly Averages</a></h5>
+                <div class="collapse ml-2 table-responsive" id="ScratchMonthlyAverages">
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Average Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for scratch in scratch_avg %}
+                        <tr>
+                            <td>{{scratch.date}}</td>
+                            <td>{{scratch.total}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+        </ul>
+        <br>
+        <ul style="list-style: none; padding: 0">
+            <li class="dropdown">
+                <h5><a href="#DailyScratches" class="dropdown-toggle stats-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                    Daily Scratches</a></h5>
+                <div class="collapse ml-2 table-responsive" id="DailyScratches">
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for scratch in daily_scratches %}
+                        <tr>
+                            <td>{{scratch.date}}</td>
+                            <td>{{scratch.total}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+        </ul>
+
+</div>
+
+{% endblock content %}

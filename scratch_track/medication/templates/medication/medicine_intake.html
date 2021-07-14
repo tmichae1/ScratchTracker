@@ -1,0 +1,14 @@
+{% extends "scratch/base.html" %}
+{% block content %}
+<div class="content-section">
+    <h1>Medical intake history</h1>
+{% for medicine in medical_history %}
+    {% if medicine.days > 1 %}
+        <p>{{medicine.name}} - {{medicine.days}} day ago</p>
+    {% else %}
+        <p>{{medicine.name}} - {{medicine.days}} day ago</p>
+    {% endif %}
+{% endfor %}
+</div>
+{% endblock content %}
+
